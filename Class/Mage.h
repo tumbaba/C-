@@ -1,11 +1,11 @@
 #pragma once
 
 
-class Mage : public Player
+class Mage : public Creature
 {
 public:
 	Mage();
-	~Mage();
+	virtual ~Mage();
 
 
 private:

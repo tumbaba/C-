@@ -6,7 +6,7 @@ Goblin::Goblin()
 }
 
 Goblin::Goblin(int hp, int mp, int attack)
-: Player(hp,mp,attack)
+: Creature(hp,mp,attack)
 {
 }
 
@@ -14,7 +14,7 @@ Goblin::~Goblin()
 {
 }
 
-void Goblin::Attack(Player* p)
+void Goblin::Attack(Creature* p)
 {
 	if (IsDead() || p->IsDead()) return;
 

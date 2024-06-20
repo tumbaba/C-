@@ -5,6 +5,6 @@
 using namespace std;
 
 // main
-#include "Player.h"
+#include "Creature.h"
 #include "Knight.h"
 #include "Goblin.h"

@@ -1,13 +1,13 @@
 #pragma once
-class Goblin : public Player
+class Goblin : public Creature
 {
 public:
 	Goblin();
 	Goblin(int hp, int mp, int attack);
-	~Goblin();
+	virtual ~Goblin();
 
 	// 함수 오버라이딩
-	void Attack(Player* p);
+	virtual void Attack(Creature* p) override;
 private:
 
 };

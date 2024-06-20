@@ -1,10 +1,10 @@
 #include "pch.h"
-#include "Player.h"
+#include "Creature.h"
 #include "Knight.h"
 
 Knight::Knight()
 // 빠른 초기화 영역
-: Player()
+: Creature()
 {
 	// 늦은 초기화 영역
 	cout << "Knight의 기본생성자" << endl;
@@ -13,7 +13,7 @@ Knight::Knight()
 }
 
 Knight::Knight(int hp, int mp, int attack, int stamina)
-: Player(hp, mp, attack)
+: Creature(hp, mp, attack)
 {
 	cout << "Knight의 타입변환 생성자" << endl;
 	_stamina = stamina;
@@ -25,7 +25,7 @@ Knight::~Knight()
 }
 
 // 함수 오버라이딩
-void Knight::Attack(Player* p)
+void Knight::Attack(Creature* p)
 {
 	if (IsDead() || p->IsDead()) return;
 

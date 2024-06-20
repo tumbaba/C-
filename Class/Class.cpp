@@ -70,7 +70,7 @@ protected: // 내부, 자식에서만 접근 가능
 
 int main()
 {
-	Player p = Player(50, 10);
+	Creature p = Creature(50, 10);
 	p.TakeDamage(5);
 	p.Print();
 
