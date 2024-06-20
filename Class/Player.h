@@ -1,39 +1,28 @@
 #pragma once
 
-#include <iostream>
-
-using namespace std;
-
 class Player
 {
 public:
-	// 생성자, 소멸자
-	Player() { _hp = 0; _mp = 0; }
-	Player(int hp, int mp) { _hp = hp; _mp = mp; }
-	~Player() {}
+	Player();
+	Player(int hp, int mp, int attack);
+	~Player();
 
-	// 멤버함수 : 클래스에서 기능
-	// => 클래스의 멤버변수에 접근할 수 있는 방법
-	void Print()
-	{
-		cout << "Player의 hp : " << _hp << endl;
-		cout << "Player의 mp : " << _mp << endl;
-	}
+	void PrintPlayer();
+	void Attack(Player* p);
+	void TakeDamage(int amount);
 
-	void TakeDamage(int amount)
-	{
-		_hp -= amount;
+	// stat을 재설정하는 함수
+	void SetStat(int hp, int mp, int attack);
 
-		if (_hp < 0)
-		{
-			_hp = 0;
-		}
-	}
+	bool IsDead() { return _hp <= 0; }
 
-private:
-	// 멤버변수 : 클래스에서 속성
-	// 코딩컨벤션 : 멤버변수를 표시해주는 컨벤션
+	// get set
+	void SetHp(int hp) { _hp = hp; }
+	const int& GetHP() { return _hp; }
+
+protected:
 	int _hp;
 	int _mp;
+	int _attack;
 };
 
