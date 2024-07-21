@@ -5,7 +5,7 @@ Goblin::Goblin()
 {
 }
 
-Goblin::Goblin(int hp, int mp, int attack)
+Goblin::Goblin(int hp, int mp, int attack) 
 : Creature(hp,mp,attack)
 {
 }
@@ -18,6 +18,6 @@ void Goblin::Attack(Creature* p)
 {
 	if (IsDead() || p->IsDead()) return;
 
-	cout << "°íºí¸° °ø°İ" << endl;
+	cout << "Â°Ã­ÂºÃ­Â¸Â° Â°Ã¸Â°Ã" << endl;
 	p->TakeDamage(_attack);
 }
