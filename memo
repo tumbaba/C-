@@ -1,0 +1,9 @@
+
+// 뭔지 모름 메모리 초과 안해준다고
+ios::sync_with_stdio(false);
+cin.tie(NULL);
+cout.tie(NULL);
+
+
+unique
+지정된 범위에서 서로 옆에 있는 중복 요소를 제거합니다.
