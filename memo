@@ -131,17 +131,32 @@ _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF)
 ///////////////////////////////////////////////////////////////////////////////////////
 
 
+std::function
 
 
+///////////////////////////////////////////////////////////////////////////////////////
+
+wstring Wstring;
+strcmp() 문자열비교 함수 (return int)
+Wstring.find() (index(size_t) return)
+std::wstring::npos
+Wstring.replace() 삽입
+
+std::stoi(string);
+to_wstring(int);
+string.data(); ??
+
+utf-8 -> (wstring)utf-16
+#include <codecvt>
+std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>>  convert;
+std::wstring WString = converter.form_bytes(string); 
+
+///////////////////////////////////////////////////////////////////////////////////////
 
 
-
-
-
-
-
-
-
+static 변수는 컴파일 시작하자마자 데이터영역에 만들어진다.
+static 함수는 class의 this 를 받지 못한다.
+함수뒤 const는 안에 있는 this에 한정
 
 
 
