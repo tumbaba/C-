@@ -1,0 +1,40 @@
+
+
+xmm0  :  SSE 명령어 세트에서 사용되는 128비트 레지스터 중 하나
+        부동 소수점 연산에 사용되는 레지스터
+
+dword ptr: dword"는 32비트(4바이트) 크기의 데이터를 의미
+            ptr은 명령어가 가리키는 메모리 위치
+
+MOVSS(Move Scalar Single-Precision Floating-Point Value) :   단일 정밀도의 부동 소수점 값을 복사하는 명령어
+
+[rbp] :  베이스 포인터(Base Pointer) 레지스터
+         주로 스택 프레임의 기준점으로 사용
+         rbp 레지스터가 가리키는 메모리 주소를 참조
+
+cvttss2si(Convert with Truncation Scalar Single-Precision Floating-Point Value to Signed Integer) : 
+        단일 정밀도 부동 소수점 값을 정수로 변환하며, 변환 시 소수 부분을 잘라냅니다(버림 연산)
+
+eax : x86 아키텍처에서 사용되는 32비트 레지스터입니다.
+      이 레지스터는 명령어의 결과를 저장하는 데 사용됩니다.
+      결과를 eax 레지스터에 저장
+
+mov(move): 데이터를 복사하는 명령어입니다
+
+16진수 이후 h가 붙어있는거는 16진수(hex)를 나타네는 기호 ex) 0Ch = 12
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
