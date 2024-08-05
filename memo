@@ -1,3 +1,5 @@
+glpat-fe7ej9jgvGzVBzvtvRXZ
+
 
 // 뭔지 모름 메모리 초과 안해준다고
 ios::sync_with_stdio(false);
@@ -158,8 +160,24 @@ static 변수는 컴파일 시작하자마자 데이터영역에 만들어진다
 static 함수는 class의 this 를 받지 못한다.
 함수뒤 const는 안에 있는 this에 한정
 
+///////////////////////////////////////////////////////////////////////////////////////
 
+// 복사 생성자
+FClass2(const FClass2& InOther)
+	: a(InOther.a)
+	, Pointer(new int(*InOther.Pointer))
+	// , Pointer(InOther.Pointer) // 기본 복사 생성자가 해줌
+{
+}
 
+// 이동 생성자(구현하지 않으면 복사 생성자가 호출)
+FClass2(FClass2&& InOther) noexcept // noexcept : 예외가 발생하지 않게 해준다.
+	: a(InOther.a)
+	, Pointer(InOther.Pointer)
+{
+	InOther.a = 0;
+	InOther.Pointer = nullptr;
+}
 
 
 
