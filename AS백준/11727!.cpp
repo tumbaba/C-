@@ -1,31 +1,32 @@
 #include <iostream>
 #include <vector>
+#include <cmath>
 
 using namespace std;
 
 int main()
 {
-	
+
 	vector<unsigned long long> Arr;
-	
+
 	Arr.push_back(1);
 	Arr.push_back(1);
 	Arr.push_back(2);
 	Arr.resize(1000);
-	
+
 
 	vector<unsigned long long> Arr_back;
-	
-	
+
+
 	vector<unsigned long long> Arr_temp1;
-	
+
 	Arr_temp1.push_back(1);
 	Arr_temp1.push_back(1);
 	Arr_temp1.push_back(1);
 	Arr.resize(1000);
 
 	vector<unsigned long long> Arr_temp2;
-	
+
 	Arr_temp2.push_back(1);
 	Arr_temp2.push_back(1);
 	Arr_temp2.push_back(2);
@@ -41,11 +42,11 @@ int main()
 	}
 	else if (N == 2)
 	{
-		cout << 2;
-	}
-	else if (N == 3)
-	{
 		cout << 3;
+	}
+	else if (N == 5)
+	{
+		cout << 4;
 	}
 	else
 	{
@@ -59,7 +60,7 @@ int main()
 			if (i % 2 == 0)
 			{
 
-				Arr_back = Arr_temp1;
+				Arr_back = Arr_temp1; 
 			}
 			else
 			{
@@ -70,7 +71,7 @@ int main()
 
 			for (int j = 2; j <= count; j++)
 			{
-				Arr[j] += Arr_back[j - 1];
+				Arr[j] += Arr_back[j - 1] ;
 				Arr[j] %= 10007;
 			}
 			if (i % 2 == 0)
@@ -87,13 +88,33 @@ int main()
 
 		}
 		unsigned long long reresult = 0;
+		int pow_count = 0;
+
 		for (int i = 1; i <= count; i++)
 		{
-			reresult += Arr[i];
+			if (i % 30 == 0)
+			{
+				++pow_count;
+			}
+			reresult += Arr[i]*(unsigned long long)pow(2,i-1) % 10007;
 		}
-		cout << reresult%10007;
+
+		cout << reresult % 10007;
 	}
-	
+
 
 	return 0;
+}
+unsigned long long AAA(unsigned long long arr, int i, vector<unsigned long long> Arr)
+{
+	int count = 0;
+	if (i <= 30)
+	{
+		count=+	AAA(arr, i - 30, Arr) * Arr[i] % 10007;
+	}
+	else
+	{
+
+	}
+	unsigned long long result = Arr[i] * (unsigned long long)pow(2, i - 1)%10007;
 }

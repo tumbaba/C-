@@ -1,0 +1,34 @@
+#include <iostream>
+
+using namespace std;
+
+int main()
+{
+	int Arr[10]{ 1,1,3,7,13,24,44,81,149,274 };
+	int N;
+	cin >> N;
+	for (int i = 0; i < N; i++)
+	{	
+		int num;
+		cin >> num;
+		
+		cout << Arr[num-1];
+	}
+
+
+	return 0;
+}
+
+/*
+1		0
+2		1  2  2
+3		3  4  2
+4		7  6  5
+5		13 11 9
+6		24 20
+7		44 37
+8		81 68
+9		149 125
+10		274
+
+*/
