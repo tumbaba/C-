@@ -4,6 +4,7 @@
 #include <iostream>
 #include "Classes/NonVirtual/Derived.h"
 #include "Classes/Virtual/DerivedVirtual.h"
+#include "Classes/Interface/Interface.h"
 
 int main()
 {
@@ -193,6 +194,243 @@ int main()
 		FB b = FB(1234);
 		FC c;
 		c.Method();
+	}
+
+	// 다중상속 사용하지 말자
+	{
+
+	}
+
+	// interface 상속
+	{
+		class FA
+		{
+		public:
+			FA()
+			{
+
+			}
+		/*private:
+			int Value = 0;*/
+		};
+
+		class FB : public FA, public IInterface, public IInterface2/*, public IInterface3*/
+		{
+		public:
+			FB()
+			{
+
+			}
+			virtual void MustFunction() override
+			{
+				//Value = 1234;
+				std::cout << __FUNCTION__ << std::endl;
+			}
+
+			virtual void MustMustFunction() override
+			{
+				std::cout << __FUNCTION__ << std::endl;
+			}
+		};
+
+		FB B;
+		/*B.FA::Value = 1234;
+		B.IInterface::Value = 234;*/
+		B.MustFunction();
+		B.MustFunction2();
+		B.MustMustFunction();
+
+		class FC : public IInterface
+		{
+			virtual void MustFunction() override
+			{
+				std::cout << __FUNCTION__ << std::endl;
+			}
+			virtual void MustFunction2() override
+			{
+				std::cout << __FUNCTION__ << std::endl;
+			}
+		};
+
+		FC C;
+
+		std::vector<IInterface*> Vector;
+		Vector.reserve(2);
+
+		IInterface* Interface = &B;
+		FB* Test = (FB*)Interface;
+
+		Vector.push_back(&B);
+		Vector.push_back(&C);
+
+		for (IInterface* It : Vector)
+		{
+			It->MustFunction();
+			It->MustFunction2();
+		}
+	}
+	
+	// C++ cast
+	{
+		// static_cast<type>
+		// const_cast<type>: const를 일시적으로 제거. const의 의미를 생각하면 정말 특별한 상황이 아니면 사용 하지 않는 것을 권장
+		// reinterpret_cast<type>
+		// dynamic_cast<type>
+
+		// static_cast: 명시적 변환을 수행하는 cast
+		{
+			int i{ 3 };
+			int k{ 4 };
+			double Result = static_cast<double>(i) / k;
+
+			class FA
+			{
+			public:
+				FA() = default;
+				~FA() = default;
+			};
+
+			class FB : public FA
+			{
+			public:
+				int Value = 0;
+			};
+
+			FA* A = new FA;
+			// down cast, 지금은 문제가 많다!
+			FB* B = (FB*)A;
+			FB* BB = static_cast<FB*>(A);
+
+			// up cast, 생략 가능
+			A = /*static_cast<FA*>*/(BB);
+
+			class FC
+			{
+
+			};
+
+			// 관련성이 없는 포인터 타입에서는 static_cast를 사용할 수 없다.
+			/*FC* C = static_cast<FC*>(BB);
+			FC* C = (FC*)(BB);*/
+
+			delete A;
+
+			int* Int = new int;
+			// 서로 관련이 없는 포인터 타입인 경우 static_cast를 사용할 수 없다.
+			/*double* Double = static_cast<double*>(Int);
+			short* Short = static_cast<short*>(Int);*/
+			delete Int;
+		}
+		// reinterpret_cast: static_cast보다 강력(?; 자유도가 높은)하지만, 안정성은 좀 떨어진다.
+		{
+			int* Int = new int;
+
+			double* Double = reinterpret_cast<double*>(Int);
+			short* Short = reinterpret_cast<short*>(Int);
+
+			class FC
+			{
+				int Value = 0;
+			};
+
+			FC* C = reinterpret_cast<FC*>(Int);
+
+			delete Int;
+		}
+		// dynamic_cast: 실행시간(런타임)에 type을 검사해서 관련이 있으면 변환
+		// 관련이 없으면 nullptr로 변환
+		// RTTI(RunTimeTypeInfo)가 켜져 있어야 동작
+		// virtual table이 있어야 사용가능합니다.
+		{
+			class FA
+			{
+			public:
+				FA() {}
+				virtual ~FA() {}
+
+				void Test()
+				{
+					std::cout << ValueA;
+				}
+
+				int ValueA = 1234;
+			};
+
+			class FB : public FA
+			{
+			public:
+				int Value = 0;
+			};
+
+			class FC
+			{
+			public:
+				virtual ~FC() = default;
+			};
+
+
+			FA* A = new FA;
+			FB* B = new FB;
+
+			FA* pA = dynamic_cast<FA*>(B);
+			pA->Test();
+
+			FC* pC = dynamic_cast<FC*>(B);
+			//FC* pC2 = reinterpret_cast<FC*>(B);
+
+			FC* C = new FC;
+			FB* pB = dynamic_cast<FB*>(pA);
+			FB* pB2 = dynamic_cast<FB*>(C);
+			if (pB2)
+			{
+				std::cout << "Cast successed!\n";
+			}
+			else
+			{
+				std::cout << "Cast failed!\n";
+			}
+
+			delete A;
+			delete B;
+			delete C;
+		}
+
+		// const_cast
+		{
+			const int Value = 10;
+
+			// 일시 적으로 const를 제거 가능
+			int* RemoveConst = const_cast<int*>(&Value);
+			*RemoveConst = 1234;
+
+			// 코드에 박혀있기 때문에 실행 시간에 바꾼 값으로 동작하는 것은 아니다
+			// 초기 값은 10으로 동작
+			int Arr[Value] = {};
+		}
+	}
+
+	// 객체지향 프로그래밍(Object-Oriented Programming(OOP))
+	{
+		// C++ class, struct OOP의 핵심 요소라고 할 수 있다.
+
+		// - 캡슐화(encapsulation)
+		// 변수와 함수를 하나의 단위로 묶는 것을 의미합니다.
+
+		// - 정보 은닉(information hiding)
+		// 프로그램의 세부 구현을 외부로 드러나지 않도록 특정 모듈 내부로
+		// 감추는 것을 의미
+		// 접근 지정자(private, protected, public)가 그 중 하나
+
+		// - 상속(inheritance)
+		// 상속은 자식 클래스가 부모 클래스의 특성과 기능을 그대로 물려 받는 것을 말한다
+		// overriding: 기능의 일부분을 변경해야 할 경우 자식 클래스에서 상속받는
+		// 기능만 수정해서 다시 정의할 수 있다.
+		// 상속은 캡슐화를 유지하면서 클래스의 재사용이 용이하도록 해 준다.
+
+		// - 다형성(polymorphism)
+		// 하나의 변수나 함수가 상황에 따라 다른 의미로 핵석될 수 있는 것을 말한다
+		// 함수 오버로딩(function overloading)
+		// 연산자 오버로딩(operator overloading)
 	}
 }
 

@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{d7759076-01bd-4778-9f4b-672113eadf02}</ProjectGuid>
-    <RootNamespace>My0104Class2</RootNamespace>
+    <ProjectGuid>{c8bce79c-1dcf-4ec1-8409-7f1261d1a074}</ProjectGuid>
+    <RootNamespace>My0105Template</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -113,8 +113,6 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
-      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -130,7 +128,6 @@
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -140,19 +137,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="01-04.Class2.cpp" />
-    <ClCompile Include="Classes\NonVIrtual\Base.cpp" />
-    <ClCompile Include="Classes\NonVIrtual\Derived.cpp" />
-    <ClCompile Include="Classes\Virtual\BaseVirtual.cpp" />
-    <ClCompile Include="Classes\Virtual\DerivedVirtual.cpp" />
+    <ClCompile Include="01-05.Template.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Classes\Interface\Interface.h" />
-    <ClInclude Include="Classes\NonVIrtual\Base.h" />
-    <ClInclude Include="Classes\NonVIrtual\Derived.h" />
-    <ClInclude Include="Classes\Virtual\BaseVirtual.h" />
-    <ClInclude Include="Classes\Virtual\DerivedVirtual.h" />
-    <ClInclude Include="Misc\Headers.h" />
+    <ClInclude Include="Template.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
