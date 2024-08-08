@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+	<Type Name="kdt::vector&lt;*&gt;">
+		<DisplayString>{{ ElemSize={Size} }}</DisplayString>
+		<Expand>
+			<Item Name="[Size]" ExcludeView="simple">Size</Item>
+			<Item Name="[Capacity]" ExcludeView="simple">Capacity</Item>
+			<ArrayItems>
+				<Size>Size</Size>
+				<ValuePointer>Array</ValuePointer>
+			</ArrayItems>
+		</Expand>
+	</Type>
+</AutoVisualizer>

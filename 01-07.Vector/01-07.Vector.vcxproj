@@ -142,6 +142,9 @@
   <ItemGroup>
     <ClInclude Include="Vector.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="KdtVector.natvis" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
