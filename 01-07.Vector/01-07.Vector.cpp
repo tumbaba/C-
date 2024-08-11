@@ -9,6 +9,7 @@
 struct FStruct
 {
 	FStruct()
+		: Pointer(new int(10))
 	{
 		std::cout << __FUNCTION__ << std::endl;
 	}
@@ -16,17 +17,25 @@ struct FStruct
 	~FStruct()
 	{
 		std::cout << __FUNCTION__ << std::endl;
+		if (Pointer)
+		{
+			delete Pointer;
+			Pointer = nullptr;
+		}
+		Pointer = nullptr;
 		Value = 0xcdcdcdcd;
 	}
 
 	FStruct(const int InValue)
 		: Value(InValue)
+		, Pointer(new int(InValue))
 	{
 		std::cout << __FUNCTION__ << " const int" << std::endl;
 	}
 
 	FStruct(const FStruct& InOther)
 		: Value(InOther.Value)
+		, Pointer(new int(Value)) // 초기화 순서 주의!
 	{
 		std::cout << __FUNCTION__ << " const FStruct&" << std::endl;
 	}
@@ -36,23 +45,60 @@ struct FStruct
 	{
 		std::cout << __FUNCTION__ << " FStruct&&" << std::endl;
 		InOther.Value = 0;
+
+		if (Pointer)
+		{
+			delete Pointer;
+			Pointer = nullptr;
+		}
+		Pointer = InOther.Pointer;
+		InOther.Pointer = nullptr;
 	}
 	FStruct& operator=(const FStruct& InOther)
 	{
 		Value = InOther.Value;
+		*Pointer = *InOther.Pointer;
 		return *this;
 	}
-	FStruct& operator=(const FStruct&& InOther) noexcept
+	FStruct& operator=(FStruct&& InOther) noexcept
 	{
 		Value = InOther.Value;
+		if (Pointer)
+		{
+			delete Pointer;
+			Pointer = nullptr;
+		}
+		Pointer = InOther.Pointer;
+
+		InOther.Value = 0;
+		InOther.Pointer = nullptr;
 		return *this;
 	}
 
 	int Value = 0;
+	int* Pointer = nullptr;
 };
 
 int main()
 {
+	{
+		_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+		
+		{
+			kdt::vector<FStruct> Vector;
+			Vector.emplace_back();
+			Vector.emplace_back();
+			Vector.emplace_back();
+			Vector.erase(Vector.begin());
+		}
+		{
+			std::vector<FStruct> Vector;
+			Vector.emplace_back();
+			Vector.emplace_back();
+			Vector.emplace_back();
+			Vector.erase(Vector.begin());
+		}
+	}
 	{
 		kdt::Test();
 
