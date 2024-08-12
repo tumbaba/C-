@@ -5,6 +5,7 @@
 #include <fstream>
 #include <string>
 #include <format>
+#include <vector>
 #include "ThirdParty/IniParser/inicpp.h"
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>
@@ -149,6 +150,135 @@ int main()
 	
 	// 3. json 파일 IO
 	{
+		// https://rapidjson.org/
 
+		struct FPlayer
+		{
+			FPlayer() = default;
+			FPlayer(const FPlayer&) = default;
+			FPlayer(std::string_view InName, const int InLevel, const int InExp) noexcept
+				: Name(InName), Level(InLevel), Exp(InExp) {}
+			~FPlayer() = default;
+
+			void Save(rapidjson::Value& InOutValue, rapidjson::Document::AllocatorType& InAllocator)
+			{
+				// 다국어 처리를 하고 싶으면 UTF-8로 변환이 필요할 수 있다.
+				/*std::wstring_convert<std::codecvt_utf8<wchar_t>> myconv;
+				std::string UTF8 = myconv.to_bytes(Name);*/
+
+				if (Name.empty())
+				{
+					_ASSERT(false);
+				}
+
+				rapidjson::Value PlayerNameString(rapidjson::kStringType);
+				PlayerNameString.SetString(Name.c_str(), InAllocator);
+
+				InOutValue.AddMember("PlayerName", PlayerNameString, InAllocator);
+				InOutValue.AddMember("Level", Level, InAllocator);
+				InOutValue.AddMember("Exp", Exp, InAllocator);
+			}
+
+			void Load(const rapidjson::Value& InValue)
+			{
+				if (InValue.HasMember("PlayerName"))
+				{
+					const char* String = InValue["PlayerName"].GetString();
+					Name = String;
+				}
+				else
+				{
+					_ASSERT(false);
+					Name = "DefaultName";
+				}
+
+				if (InValue.HasMember("Level"))
+				{
+					Level = InValue["Level"].GetInt();
+				}
+				if (InValue.HasMember("Exp"))
+				{
+					Exp = InValue["Exp"].GetInt();
+				}
+			}
+
+		private:
+			std::string Name;
+			int Level = 0;
+			int Exp = 0;
+		};
+
+		using uint = unsigned int;
+		constexpr uint PlayerNumbers = 20;
+
+		// Save
+		{
+			std::vector<FPlayer> Players;
+			Players.reserve(PlayerNumbers);
+
+			for (uint i = 0; i < PlayerNumbers; ++i)
+			{
+				std::string Name = "Player" + std::to_string(i);
+				Players.emplace_back(Name, i, i + 100);
+			}
+
+			rapidjson::Document Doc(rapidjson::kObjectType);
+
+			rapidjson::Value Array(rapidjson::kArrayType);
+			for (FPlayer& It : Players)
+			{
+				rapidjson::Value PlayerValue(rapidjson::kObjectType);
+				It.Save(PlayerValue, Doc.GetAllocator());
+
+				Array.PushBack(PlayerValue, Doc.GetAllocator());
+			}
+
+			Doc.AddMember("PlayerInfo", Array, Doc.GetAllocator());
+
+			rapidjson::StringBuffer Buffer;
+			rapidjson::Writer<rapidjson::StringBuffer> Writer(Buffer);
+			Doc.Accept(Writer);
+			std::string Json(Buffer.GetString(), Buffer.GetSize());
+
+			std::ofstream File("TestJson.json");
+			File << Json;
+		}
+
+		// Load
+		{
+			std::vector<FPlayer> Players;
+
+			std::ifstream File("TestJson.json");
+			std::string Json;
+			std::string TempLine;
+			while (std::getline(File, TempLine))
+			{
+				Json += TempLine;
+			}
+			//File >> Json;
+
+			rapidjson::Document Doc(rapidjson::kObjectType);
+			Doc.Parse(Json.data());
+
+			bool bPlayerInfo = Doc.HasMember("PlayerInfo");
+			_ASSERT(bPlayerInfo);
+			if (bPlayerInfo)
+			{
+				rapidjson::Value& Array = Doc["PlayerInfo"];
+				_ASSERT(Array.IsArray());
+				if (Array.IsArray())
+				{
+					const rapidjson::SizeType Size = Array.Size();
+					for (rapidjson::SizeType i = 0; i < Size; ++i)
+					{
+						FPlayer NewPlayer;
+						rapidjson::Value& Value = Array[i];
+						NewPlayer.Load(Value);
+
+						Players.emplace_back(NewPlayer);
+					}
+				}
+			}
+		}
 	}
 }
