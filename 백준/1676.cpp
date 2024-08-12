@@ -1,77 +1,75 @@
 #include <iostream>
-#include <utility>
-
+#include <string>
+#include <stack>
 using namespace std;
 
-pair<int,int> A10(int a, int* count)
+
+long long P(int a)
 {
-	while (a % 10 == 0)
+	if (a == 0)
 	{
-		a = a / 10;
-		(*count)++;
+		return  1;
+
 	}
-	return make_pair(a, *count);
+	int b = a - 1;
+
+
+	return a * P(b);
 }
-	
 
-pair<int, int> A2(int a, int* count)
+
+
+int p(int a)
 {
-	
-	while (a % 2 == 0)
+	int count = 0;
+	if (a % 10 == 0)
 	{
-		a = a / 2;
-		*count = *count +1;
+		count++;
+		return  p(a % 10);
 	}
-	return make_pair(a, *count);
-
-}
-pair<int, int> A5(int a, int* count)
-{
-	while (a % 5 == 0)
-	{
-		a = a / 5;
-		*count = *count +1;
-	}
-	return make_pair(a, *count);
-
-
+	else if(a)
 }
 
 
 int main()
 {
-
+	stack<char> result;
 	int num;
 	cin >> num;
-	int resultcount =0;
-	int count10 = 0;
-	int count2 = 0;
-	int count5 = 0;
 
-	for (int i = 1; i <= num; i++)
-	{
-		pair<int, int> Pair = make_pair(0, 0);
-		
-		Pair = A10(i, &count10);
-		//count10 = Pair.second;
-		
-		Pair = A2(Pair.first, &count2);
-		//count2 = Pair.second;
+	
+	//string Arr = to_string(P(num));
+	//for (int i = 0; i < Arr.size(); i++)
+	//{
+	//	result.push(Arr[i]);
+	//}
+	//int count = 0;
+	//while (1)
+	//{
+	//	if (result.top() == 48)
+	//	{
+	//		count++;
+	//		result.pop();
+	//	}
+	//	else
+	//	{
+	//		break;
+	//	}
+	//}
+	//cout << count;
 
-		Pair = A5(Pair.first, &count5);
-		//count5 = Pair.second;
-	}
-	int count = 0;
-	if (count2 >= count5)
-	{
-		count = count5;
-	}
-	else
-	{
-		count = count2;
-	}
+	int count10;
+	int count2;
+	int count5;
 
-	cout << count10 + count;
+
+	for (int i = 0; i < num; i++)
+	{
+		if (i % 10 == 0)
+		{
+			count10++;
+		}
+	}
 
 	return 0;
 }
