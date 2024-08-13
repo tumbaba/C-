@@ -160,6 +160,11 @@ int main()
 				: Name(InName), Level(InLevel), Exp(InExp) {}
 			~FPlayer() = default;
 
+			void PrintPlayerInfo()
+			{
+				std::cout << std::format("Name: {}, Level: {}, Exp: {}\n", Name, Level, Exp);
+			}
+
 			void Save(rapidjson::Value& InOutValue, rapidjson::Document::AllocatorType& InAllocator)
 			{
 				// 다국어 처리를 하고 싶으면 UTF-8로 변환이 필요할 수 있다.
@@ -278,6 +283,11 @@ int main()
 						Players.emplace_back(NewPlayer);
 					}
 				}
+			}
+
+			for (auto& It : Players)
+			{
+				It.PrintPlayerInfo();
 			}
 		}
 	}
