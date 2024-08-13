@@ -11,21 +11,47 @@ int main()
 
 	vector<int> Arr;
 
-	int num;
-	while (cin >> num)
+	for (int i = 0; i < 9; i++)
 	{
+		int num;
+		cin >> num;
 		Arr.push_back(num);
 	}
 
-	int Size = Arr.size();
+	int count = 0;
 
 	sort(Arr.begin(), Arr.end());
-	if (Size >= 7)
+	
+	for (int i = 0; i < 9; i++)
 	{
-		for (auto it = Arr.begin(); it != Arr.begin() + 7; it++)
+		count += Arr[i];
+	}
+
+	int sum1 = 0;
+	int sum2 = 0;
+
+	for (int i = 0; i < 8; i++)
+	{
+		for (int j = i + 1; j < 9; j++)
 		{
-			cout << *it << endl;
+			if (count - Arr[i] - Arr[j] == 100)
+			{
+				sum1 = i;
+				sum2 = j;
+				break;
+			}
 		}
+		if (sum1 != 0)
+		{
+			break;
+		}
+	}
+	Arr.erase(Arr.begin() + sum2 );
+	Arr.erase(Arr.begin() + sum1 );
+		
+	for (int i = 0; i < Arr.size(); i++)
+	{
+		cout << Arr[i] << endl;
 	}
 	
 
