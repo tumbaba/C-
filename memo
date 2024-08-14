@@ -4,7 +4,7 @@ glpat-fe7ej9jgvGzVBzvtvRXZ
 deact#또비활성화
 
 
-// 뭔지 모름 메모리 초과 안해준다고
+// 뭔지 모름 메모리 초과 안해준다고  
 ios::sync_with_stdio(false);
 cin.tie(NULL);
 cout.tie(NULL);
