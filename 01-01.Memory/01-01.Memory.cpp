@@ -16,7 +16,7 @@ std::weak_ptr<FStruct> GWeakPtrStruct;
 
 int main()
 {
-    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF); //nhj
     //_CrtSetBreakAlloc(192);
 
     // Stack memory
