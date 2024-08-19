@@ -1,4 +1,3 @@
-#include "kdt_set.h"
 namespace kdt
 {
 	template<typename _Ty>
@@ -48,19 +47,12 @@ namespace kdt
 
 		return iterator(this, FindNode);
 	}
-
-	////////////////////////////////////////
 	template<typename _Ty>
 	inline set<_Ty>::iterator set<_Ty>::erase(const iterator& It)
 	{
-		*FBSTNode<_Ty> hi = It.Node;
- 
-
-
-		return iterator();
+		Node* SuccessorNode = BST_Delete(It.Node);
+		return iterator(this, SuccessorNode);
 	}
-	////////////////////////////////////////
-
 	template<typename _Ty>
 	inline set<_Ty>::iterator kdt::set<_Ty>::begin()
 	{
@@ -145,6 +137,80 @@ namespace kdt
 		}
 
 		return x;
+	}
+
+	template<typename _Ty>
+	inline set<_Ty>::Node* set<_Ty>::BST_Delete(Node* D)
+	{
+		Node* E = BST_Successor(D);
+		if (D->Left == nullptr)
+		{
+			Shift_Nodes(D, D->Right);
+		}
+		else if (D->Right == nullptr)
+		{
+			Shift_Nodes(D, D->Left);
+		}
+		else
+		{
+			if (E->Parent != D)
+			{
+				Shift_Nodes(E, E->Right);
+				E->Right = D->Right;
+				E->Right->Parent = E;
+			}
+			Shift_Nodes(D, E);
+			E->Left = D->Left;
+			E->Left->Parent = E;
+		}
+		delete D;
+		return E;
+
+		// BST_Predecessor version
+		/*Node* E = BST_Predecessor(D);
+		if (D->Left == nullptr)
+		{
+			Shift_Nodes(D, D->Right);
+		}
+		else if (D->Right == nullptr)
+		{
+			Shift_Nodes(D, D->Left);
+		}
+		else
+		{
+			if (E->Parent != D)
+			{
+				Shift_Nodes(E, E->Left);
+				E->Left = D->Left;
+				E->Left->Parent = E;
+			}
+			Shift_Nodes(D, E);
+			E->Right = D->Right;
+			E->Right->Parent = E;
+		}
+		delete D;
+		return E;*/
+	}
+
+	template<typename _Ty>
+	inline void set<_Ty>::Shift_Nodes(Node* u, Node* v)
+	{
+		if (u->Parent == nullptr)
+		{
+			Root = v;
+		}
+		else if (u == u->Parent->Left)
+		{
+			u->Parent->Left = v;
+		}
+		else
+		{
+			u->Parent->Right = v;
+		}
+		if (v != nullptr)
+		{
+			v->Parent = u->Parent;
+		}
 	}
 
 	template<typename _Ty>

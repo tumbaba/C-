@@ -14,6 +14,9 @@ namespace kdt
 	template<typename _Ty>
 	class _Set_iterator
 	{
+		template<typename _Ty>
+		friend class set;
+
 	public:
 		_Set_iterator() = default;
 		_Set_iterator(set<_Ty>* InSet, FBSTNode<_Ty>* InNode)
@@ -106,9 +109,8 @@ namespace kdt
 
 		iterator insert(const _Ty& InKey);
 		_NODISCARD iterator find(const _Ty& InKey);
-		////////////////////////////////////////
 		iterator erase(const iterator& It);
-		////////////////////////////////////////
+
 		_NODISCARD iterator begin();
 		_NODISCARD iterator end();
 		
@@ -120,6 +122,9 @@ namespace kdt
 
 		Node* Iterative_Tree_Search(Node* x, const _Ty& key);
 
+		Node* BST_Delete(Node* D);
+		void Shift_Nodes(Node* u, Node* v);
+
 		// 후임자 찾기
 		Node* BST_Successor(Node* x);
 		Node* BST_Minimum(Node* x);
@@ -128,13 +133,13 @@ namespace kdt
 		Node* BST_Maximum(Node* x);
 
 		// ---------------------------------Traversal--------------------------------------
-		// 순서대로 출력할 때 사용
+		// 순서대로 출력할 때 사용(중위 순회)
 		void Inorder_Tree_Walk(Node* x, std::function<void(Node*)> Function);
 
-		// Tree를 복제할 때 사용 (부모-> 자식으로 향함)
+		// Tree를 복제할 때 사용 (부모-> 자식으로 향함; 전위 순회)
 		void Preorder_Tree_Walk(Node* x, std::function<void(Node*)> Function);
 		
-		// Tree를 delete 할 때 사용 (자식 -> 부모로 향함)
+		// Tree를 delete 할 때 사용 (자식 -> 부모로 향함; 후위 순회)
 		void Postorder_Tree_Walk(Node* x, std::function<void(Node*)> Function);
 		// ---------------------------------Traversal end----------------------------------
 

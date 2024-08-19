@@ -8,6 +8,8 @@
 
 int main()
 {
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+	int* Test = new int;
 	{
 		// https://www.cs.usfca.edu/~galles/visualization/BST.html
 		kdt::set<int> Set;
@@ -62,7 +64,16 @@ int main()
 			}
 			std::cout << "\nBST_Successor 사용한 순회(InOrder) end\n";
 
-			kdt::set<int>::iterator It = SetMove.find(46);
+			kdt::set<int>::iterator It = SetMove.find(50);
+			It = SetMove.erase(It);
+
+			std::cout << "\nRangeBasedFor start\n";
+			for (int Key : SetMove)
+			{
+				std::cout << Key << " ";
+			}
+			std::cout << "\nRangeBasedFor start\n";
+
 			kdt::set<int>::iterator ItFailed = SetMove.find(666);
 		}
 
