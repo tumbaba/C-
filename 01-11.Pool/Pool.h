@@ -28,6 +28,135 @@ private:
 	int Data2 = {};
 };
 
+class FMemoryPool;
+struct FMemoryHeader
+{
+	FMemoryPool* Pool = nullptr;
+	int Flag = 0;
+	int Flag2 = 0;
+};
+
+class FClass2
+{
+public:
+	FClass2()
+	{
+
+	}
+
+	FClass2(const int InData)
+		:Data(InData)
+	{
+
+	}
+
+	FMemoryHeader* GetMemoryHeader()
+	{
+		FMemoryHeader* MemoryHeader = reinterpret_cast<FMemoryHeader*>(this) - 1;
+		return MemoryHeader;
+	}
+
+	int Data = 0;
+};
+
+class FClass3 : public FClass2
+{
+public:
+	FClass3()
+		: FClass2(10)
+	{
+		if (GetMemoryHeader()->Flag2 == 1234)
+		{
+			Data2 = GetMemoryHeader()->Flag2;
+		}
+		if (Data == 10)
+		{
+			// ...
+		}
+	}
+
+	FClass3(const int InData)
+		: FClass2(InData)
+	{
+		if (Data == 10)
+		{
+			// ...
+		}
+	}
+	int Data2 = 0;
+};
+
+struct FObjectInitializer
+{
+	FMemoryPool* Pool = nullptr;
+	int Flag = 0;
+	int Flag2 = 0;
+};
+
+class FObjectBase
+{
+public:
+	FObjectBase() {}
+	FObjectBase(const FObjectInitializer& InObjectInitializer)
+		: Pool(InObjectInitializer.Pool)
+		, Flag(InObjectInitializer.Flag)
+		, Flag2(InObjectInitializer.Flag2)
+	{
+
+	}
+
+	void Delete();
+
+protected:
+	FMemoryPool* Pool;
+	int Flag;
+	int Flag2;
+};
+
+class FObject : public FObjectBase
+{
+public:
+	FObject()
+	{
+		if (Flag == 1234)
+		{
+			std::cout << "Flag : 1234\n";
+		}
+	}
+	~FObject()
+	{
+
+	}
+
+	template<class T>
+	static T* NewObject(FObjectInitializer& InObjectInitailizer)
+	{
+		static FMemoryPool MemoryPool{ sizeof(T), 1000 };
+		InObjectInitailizer.Pool = &MemoryPool;
+		FObjectBase* ObjectBase = static_cast<FObjectBase*>(MemoryPool.malloc());
+		new(ObjectBase)FObjectBase(InObjectInitailizer);
+		new(ObjectBase)T();
+		T* NewObject = static_cast<T*>(ObjectBase);
+		return NewObject;
+	}
+
+protected:
+	int Value = 2;
+};
+
+class AActor : public FObject
+{
+public:
+	AActor()
+	{
+		if (Flag == 333)
+		{
+			std::cout << "Actor!\n";
+		}
+	}
+	int Value2 = 1234;
+};
+
 // 고정 사이즈 Memory pool
 class FMemoryPool
 {
@@ -48,12 +177,12 @@ public:
 		// 1000 (8 - 1 -> 7(0111) bit not 1000)
 		// ----- AND
 		// 1000 (8)
-		//const size_t AlignedChunkSize = ((InChunkSize + (Align - 1)) & ~(Align - 1));
-		//const size_t TotalMemorySize = AlignedChunkSize * ChunkCount;
-		//StartAddress = ::_aligned_malloc(TotalMemorySize, Align);
+		const size_t AlignedChunkSize = ((InChunkSize + (Align - 1)) & ~(Align - 1));
+		const size_t TotalMemorySize = AlignedChunkSize * ChunkCount;
+		StartAddress = ::_aligned_malloc(TotalMemorySize, Align);
 
-		const size_t TotalMemorySize = InChunkSize * ChunkCount;
-		StartAddress = ::malloc(TotalMemorySize);
+		//const size_t TotalMemorySize = InChunkSize * ChunkCount;
+		//StartAddress = ::malloc(TotalMemorySize);
 
 		/*std::cout << std::format("[MemoryPool] ChunkSize: {}, ChunkCount:{}, TotalMemorySize: {}\n", 
 			ChunkSize, ChunkCount, TotalMemorySize);*/
@@ -72,8 +201,8 @@ public:
 	~FMemoryPool()
 	{
 		_ASSERT(StartAddress);
-		free(StartAddress);
-		//::_aligned_free(StartAddress);
+		//::free(StartAddress);
+		::_aligned_free(StartAddress);
 	}
 
 	void* malloc()
@@ -93,6 +222,11 @@ public:
 	void free(void* InMemory)
 	{
 		ActiveMemoryBlock.emplace_back(InMemory);
+	}
+	void free2(void** InMemory)
+	{
+		ActiveMemoryBlock.emplace_back(*InMemory);
+		*InMemory = nullptr;
 	}
 
 private:

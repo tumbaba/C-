@@ -423,12 +423,14 @@ int main()
 			std::cout << std::format("[FClass] shared_ptr: {}ms\n", DiffCount);
 		}
 		{
+			FAllocator<FClass> Allocator;
+			std::shared_ptr<FClass> Init = std::allocate_shared<FClass>(Allocator);
+			Init = nullptr;
 			std::vector<std::shared_ptr<FClass>> Vector;
 			Vector.reserve(MaxCount);
 			auto Start{ std::chrono::steady_clock::now() };
 			{
 				//std::allocator<FClass> Allocator;
-				FAllocator<FClass> Allocator;
 				for (size_t i = 0; i < MaxCount; ++i)
 				{
 					std::shared_ptr<FClass> Instance = std::allocate_shared<FClass>(Allocator);
@@ -448,5 +450,36 @@ int main()
 #endif
 			std::cout << std::format("[FClass] custom allocator shared_ptr: {}ms\n", DiffCount);
 		}
+	}
+
+	// Memory Header
+	{
+		//  r(MemoryHeader)		 r(16byte), FClass3*
+		//  [                    |                            ]
+		FMemoryPool MemoryPool{ sizeof(FMemoryHeader) + sizeof(FClass3), MaxCount };
+		void* Pointer = MemoryPool.malloc();
+		FMemoryHeader* MemoryHeader = static_cast<FMemoryHeader*>(Pointer);
+		new(MemoryHeader) FMemoryHeader();
+		MemoryHeader->Pool = &MemoryPool;
+		MemoryHeader->Flag2 = 1234;
+
+		FClass3* Class = reinterpret_cast<FClass3*>(MemoryHeader + 1);
+		new(Class)FClass3();
+
+		FMemoryHeader* MemoryHeaderPos = reinterpret_cast<FMemoryHeader*>(Class) - 1;
+		//MemoryHeaderPos->Pool->free(Class);
+		MemoryHeaderPos->Pool->free2((void**)& Class);
+	}
+	// Unreal 스타일
+	{
+		FObjectInitializer ObjectInitializer;
+		ObjectInitializer.Flag = 1234;
+		ObjectInitializer.Flag2 = 123;
+		FObject* Object = FObject::NewObject<FObject>(ObjectInitializer);
+		ObjectInitializer.Flag = 333;
+		Object->Delete();
+		FObject* Object2 = FObject::NewObject<FObject>(ObjectInitializer);
+		Object2->Delete();
+		AActor* Actor = FObject::NewObject<AActor>(ObjectInitializer);
 	}
 }
