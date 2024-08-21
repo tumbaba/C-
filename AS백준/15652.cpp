@@ -10,25 +10,19 @@ void DFS(int depth)
 	if (depth == m - 1)
 	{
 
-
-
 		for (int i = 0; i < m; i++)
 		{
 			cout << Arr[i] << ' ';
 		}
 		cout << '\n';
 
-
 		return;
 	}
 
 	for (int i = 1; i <= n; i++)
 	{
-
-
 		Arr[depth + 1] = i;
 		DFS(depth + 1);
-
 
 	}
 }
@@ -40,6 +34,15 @@ void DFS(int depth)
 int main()
 {
 	cin >> n >> m;
+
+	for (int i = 0; i < n; i++)
+	{
+		int num;
+		cin >> num;
+		visit[num] = true;
+	}
+
+
 	for (int i = 1; i <= n; i++)
 	{
 
