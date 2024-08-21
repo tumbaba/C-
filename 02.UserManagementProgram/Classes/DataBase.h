@@ -1,20 +1,10 @@
 #pragma once
 #include "Misc/Headers.h"
 #include "Classes/Account.h"
+#include "Classes/Player.h"
 
 class FDataBase
 {
-public:
-	enum EErrorCode : uint8_t
-	{
-		ESuccessed,
-		EUnknown,
-		EEmptyAccount,
-		EDuplicateAccount,
-		ECanNotFoundAccount,
-		EAccountNotValid,
-	};
-
 public:
 	static FDataBase* Get(const bool bDestry = false);
 
@@ -33,6 +23,10 @@ public:
 
 	const std::unordered_map<FAccountName, FAccount>& GetAccounts() const { return AccountMap; }
 
+public:
+	EErrorCode CreatePlayer(const FAccount& InAccount, std::string_view InPlayerName);
+	EErrorCode DeletePlayer(const FAccount& InAccount, std::string_view InPlayerName);
+	std::shared_ptr<FPlayer> CheckPlayer(const FAccount& InAccount, std::string_view InPlayerName, EErrorCode* OptionalOutErrorCode = nullptr);
 
 protected:
 	void SaveAccountFile(const FAccount& InAccount);

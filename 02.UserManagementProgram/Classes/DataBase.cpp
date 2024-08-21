@@ -1,14 +1,10 @@
 #include "DataBase.h"
+#include "LoginSession.h"
 
 FDataBase* FDataBase::Get(const bool bDestry)
 {
     static std::unique_ptr<FDataBase> Instance{ new FDataBase };
-
-    if (bDestry)
-    {
-        Instance = nullptr;
-    }
-
+    if (bDestry) { Instance = nullptr; }
     return Instance.get();
 }
 
@@ -46,7 +42,7 @@ FAccount* FDataBase::CreateAccount(const FAccount& InAccount, EErrorCode* const 
     return &Pair.first->second;
 }
 
-FDataBase::EErrorCode FDataBase::DeleteAccount(const FAccount& InAccount)
+EErrorCode FDataBase::DeleteAccount(const FAccount& InAccount)
 {
     EErrorCode ErrorCode;
     FAccount* Account = CheckAccount(InAccount, &ErrorCode);
@@ -108,6 +104,125 @@ FAccount* FDataBase::CheckAccount(const FAccount& InAccount, EErrorCode* Optiona
     return FoundAccount;
 }
 
+EErrorCode FDataBase::CreatePlayer(const FAccount& InAccount, std::string_view InPlayerName)
+{
+    {
+        EErrorCode ErrorCode = EErrorCode::ESuccessed;
+        FAccount* Account = FDataBase::Get()->CheckAccount(InAccount, &ErrorCode);
+        if (!Account)
+        {
+            return ErrorCode;
+        }
+    }
+
+    const std::string UserDirectory = AccountsDirectory + "\\" + InAccount.ID;
+    const std::string PlayerFile = UserDirectory + "\\" + InPlayerName.data() + ".json";
+
+    {
+        std::ifstream File(PlayerFile);
+        if (File.is_open())
+        {
+            return EErrorCode::EDuplicatePlayerName;
+        }
+    }
+
+    FPlayer NewPlayer = FPlayer(InAccount.ID, InPlayerName, 0);
+    {
+        rapidjson::Document Doc(rapidjson::kObjectType);
+
+        rapidjson::Value PlayerInfo(rapidjson::kObjectType);
+        NewPlayer.Save(PlayerInfo, Doc.GetAllocator());
+
+        Doc.AddMember("PlayerInfo", PlayerInfo, Doc.GetAllocator());
+
+        rapidjson::StringBuffer Buffer;
+        rapidjson::Writer<rapidjson::StringBuffer> Wirter(Buffer);
+        Doc.Accept(Wirter);
+        std::string Json(Buffer.GetString(), Buffer.GetSize());
+
+        std::ofstream File(PlayerFile);
+        File << Json;
+    }
+    return ESuccessed;
+}
+
+EErrorCode FDataBase::DeletePlayer(const FAccount& InAccount, std::string_view InPlayerName)
+{
+    {
+        EErrorCode ErrorCode = EErrorCode::ESuccessed;
+        std::shared_ptr<FPlayer> Player = CheckPlayer(InAccount, InPlayerName, &ErrorCode);
+        if (ErrorCode != EErrorCode::ESuccessed)
+        {
+            return ErrorCode;
+        }
+    }
+
+    FPlayer* Player = FLoginSession::Get()->IsLogin(InAccount.ID, InPlayerName);
+    if (Player)
+    {
+        FLoginSession::Get()->Logout(InAccount, InPlayerName);
+    }
+
+    std::string Cmd = "del /q " + AccountsDirectory + "\\" + InAccount.ID + "\\" + InPlayerName.data() + ".json";
+    system(Cmd.c_str());
+
+    return EErrorCode::ESuccessed;
+}
+
+std::shared_ptr<FPlayer> FDataBase::CheckPlayer(const FAccount& InAccount, std::string_view InPlayerName, EErrorCode* OptionalOutErrorCode)
+{
+    if (!CheckAccount(InAccount, OptionalOutErrorCode))
+    {
+        return nullptr;
+    }
+
+    const std::string UserDirectory = AccountsDirectory + "\\" + InAccount.ID;
+    const std::string PlayerFile = UserDirectory + "\\" + InPlayerName.data() + ".json";
+
+    std::ifstream File(PlayerFile);
+    if (!File.is_open())
+    {
+        if (OptionalOutErrorCode) { *OptionalOutErrorCode = EErrorCode::EPlayerNotValid; }
+        return nullptr;
+    }
+    std::string Json;
+    {
+        std::string Temp;
+        while (std::getline(File, Temp)) { Json += Temp; }
+        if (Json.empty())
+        {
+            _ASSERT(false);
+            if (OptionalOutErrorCode) { *OptionalOutErrorCode = EErrorCode::EPlayerNotValid; }
+            return nullptr;
+        }
+    }
+
+    rapidjson::Document Doc(rapidjson::kObjectType);
+    Doc.Parse(Json.data());
+
+    const bool bPlayerInfo = Doc.HasMember("PlayerInfo");
+    if (!bPlayerInfo)
+    {
+        // 저장된 Jsondp Account member가 없다
+        _ASSERT(false);
+        if (OptionalOutErrorCode) { *OptionalOutErrorCode = EErrorCode::EPlayerNotValid; }
+        return nullptr;
+    }
+
+    std::shared_ptr<FPlayer> Player = std::make_shared<FPlayer>(InAccount.ID, InPlayerName, 0);
+    rapidjson::Value& PlayerInfoValue = Doc["PlayerInfo"];
+    if (!Player->Load(PlayerInfoValue))
+    {
+        _ASSERT(false);
+        if (OptionalOutErrorCode) { *OptionalOutErrorCode = EErrorCode::EPlayerNotValid; }
+        return nullptr;
+    }
+
+    if (OptionalOutErrorCode) { *OptionalOutErrorCode = EErrorCode::ESuccessed; }
+
+    return Player;
+}
+
 void FDataBase::SaveAccountFile(const FAccount& InAccount)
 {
     // 폴더 생성
@@ -138,12 +253,16 @@ void FDataBase::SaveAccountFile(const FAccount& InAccount)
 
 void FDataBase::DeleteAccountFile(const FAccount& InAccount)
 {
-    std::string Cmd = "del /q " + AccountsDirectory + "\\" + InAccount.ID;
+    //std::string Cmd = "del /q " + AccountsDirectory + "\\" + InAccount.ID;
+    std::string Cmd = "rmdir /s /q " + AccountsDirectory + "\\" + InAccount.ID;
     system(Cmd.c_str());
 }
 
 FDataBase::FDataBase()
 {
+    std::string Cmd = "mkdir " + AccountsDirectory;
+    system(Cmd.c_str());
+
     const std::filesystem::path AccountsPath{ AccountsDirectory };
     for (auto const& It : std::filesystem::directory_iterator{ AccountsPath })
     {
