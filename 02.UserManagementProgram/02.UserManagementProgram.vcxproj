@@ -150,9 +150,9 @@
     <ClCompile Include="Task\CreatePlayerTask.cpp" />
     <ClCompile Include="Task\DeleteAccountTask.cpp" />
     <ClCompile Include="Task\DeletePlayerTask.cpp" />
-    <ClCompile Include="Task\LevelUpTask.cpp" />
     <ClCompile Include="Task\LoginTask.cpp" />
     <ClCompile Include="Task\LogoutTask.cpp" />
+    <ClCompile Include="Task\PlayerLevelUpTask.cpp" />
     <ClCompile Include="Task\PrintAccountTask.cpp" />
     <ClCompile Include="Task\PrintLoginPlayerTask.cpp" />
   </ItemGroup>
@@ -169,9 +169,9 @@
     <ClInclude Include="Task\CreatePlayerTask.h" />
     <ClInclude Include="Task\DeleteAccountTask.h" />
     <ClInclude Include="Task\DeletePlayerTask.h" />
-    <ClInclude Include="Task\LevelUpTask.h" />
     <ClInclude Include="Task\LoginTask.h" />
     <ClInclude Include="Task\LogoutTask.h" />
+    <ClInclude Include="Task\PlayerLevelUpTask.h" />
     <ClInclude Include="Task\PrintAccountTask.h" />
     <ClInclude Include="Task\PrintLoginPlayerTask.h" />
     <ClInclude Include="Task\Tasks.h" />

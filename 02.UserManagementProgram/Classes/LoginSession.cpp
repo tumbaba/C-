@@ -49,15 +49,6 @@ FPlayer* FLoginSession::Login(const FAccount& InAccount, std::string_view InPlay
     return &Pair.first->second;
 }
 
-void FLoginSession::AllLogout()
-{
-    const std::unordered_map<FAccountName, FAccount>& Account = FDataBase::Get()->GetAccounts();
-    for (auto It : Account)
-    {
-        Logout(It.second.,)
-    }
-}
-
 EErrorCode FLoginSession::Logout(const FAccount& InAccount)
 {
     EErrorCode ErrorCode = EErrorCode::ESuccessed;
@@ -79,6 +70,31 @@ EErrorCode FLoginSession::Logout(const FAccount& InAccount)
     return ErrorCode;
 }
 
+void FLoginSession::AllPlayerLogout()
+{
+    const std::unordered_map<FAccountName, FAccount>& Accounts = FDataBase::Get()->GetAccounts();
+    for (auto It = PlayerMap.begin(); It != PlayerMap.end();)
+    {
+        auto Account = Accounts.find(It->first);
+        if (Account == Accounts.end())
+        {
+            _ASSERT(false);
+            ++It;
+            continue;
+        }
+
+        auto RemoveTarget = It;
+        ++It; // 지워지기 전에 It를 변경해둔다
+
+        Logout(Account->second, RemoveTarget->second.GetName());
+    }
+}
+
+FLoginSession::~FLoginSession()
+{
+    AllPlayerLogout();
+}
+
 EErrorCode FLoginSession::Logout(const FAccount& InAccount, std::string_view InPlayerName)
 {
     EErrorCode ErrorCode = EErrorCode::ESuccessed;
@@ -97,6 +113,8 @@ EErrorCode FLoginSession::Logout(const FAccount& InAccount, std::string_view InP
         return ENoLogin;
     }
 
+    Player->OnLogout();
+    FDataBase::Get()->SavePlayer(Player);
     PlayerMap.erase(InAccount.ID);
 
     return ErrorCode;

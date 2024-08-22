@@ -125,24 +125,10 @@ EErrorCode FDataBase::CreatePlayer(const FAccount& InAccount, std::string_view I
             return EErrorCode::EDuplicatePlayerName;
         }
     }
-
     FPlayer NewPlayer = FPlayer(InAccount.ID, InPlayerName, 0);
-    {
-        rapidjson::Document Doc(rapidjson::kObjectType);
 
-        rapidjson::Value PlayerInfo(rapidjson::kObjectType);
-        NewPlayer.Save(PlayerInfo, Doc.GetAllocator());
-
-        Doc.AddMember("PlayerInfo", PlayerInfo, Doc.GetAllocator());
-
-        rapidjson::StringBuffer Buffer;
-        rapidjson::Writer<rapidjson::StringBuffer> Wirter(Buffer);
-        Doc.Accept(Wirter);
-        std::string Json(Buffer.GetString(), Buffer.GetSize());
-
-        std::ofstream File(PlayerFile);
-        File << Json;
-    }
+    SavePlayer(&NewPlayer);
+    
     return ESuccessed;
 }
 
@@ -256,6 +242,29 @@ void FDataBase::DeleteAccountFile(const FAccount& InAccount)
     //std::string Cmd = "del /q " + AccountsDirectory + "\\" + InAccount.ID;
     std::string Cmd = "rmdir /s /q " + AccountsDirectory + "\\" + InAccount.ID;
     system(Cmd.c_str());
+}
+
+void FDataBase::SavePlayer(FPlayer* InPlayer)
+{
+    const std::string UserDirectory = AccountsDirectory + "\\" + InPlayer->GetAccountName().data();
+    const std::string PlayerFile = UserDirectory + "\\" + InPlayer->GetName().data() + ".json";
+
+    {
+        rapidjson::Document Doc(rapidjson::kObjectType);
+
+        rapidjson::Value PlayerInfo(rapidjson::kObjectType);
+        InPlayer->Save(PlayerInfo, Doc.GetAllocator());
+
+        Doc.AddMember("PlayerInfo", PlayerInfo, Doc.GetAllocator());
+
+        rapidjson::StringBuffer Buffer;
+        rapidjson::Writer<rapidjson::StringBuffer> Wirter(Buffer);
+        Doc.Accept(Wirter);
+        std::string Json(Buffer.GetString(), Buffer.GetSize());
+
+        std::ofstream File(PlayerFile);
+        File << Json;
+    }
 }
 
 FDataBase::FDataBase()

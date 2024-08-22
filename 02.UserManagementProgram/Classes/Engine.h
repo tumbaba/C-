@@ -14,7 +14,8 @@ enum EMenuEvent : uint8_t
 	ELogin,
 	ELogout,
 	EPrintLoginUsers,
-	ELevelUp
+
+	EPlayerLevelUp
 };
 
 class FEngine

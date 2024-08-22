@@ -69,11 +69,9 @@ void FEngine::Run()
 			FPrintLoginPlayerTask PrintLoginPlayerTask;
 			break;
 		}
-		case ELevelUp:
+		case EPlayerLevelUp:
 		{
-			FPrintAccountTask PrintAccountTask;
-			FPrintLoginPlayerTask PrintLoginPlayerTask;
-			FLevelUpTask LevelUpTask;
+			FPlayerLevelUpTask Task;
 			break;
 		}
 		default:
@@ -96,7 +94,6 @@ void FEngine::Release()
 	//std::cout << std::format("[System] {}\n", __FUNCTION__);
 	FLoginSession::Get(true);
 	FDataBase::Get(true);
-	
 }
 
 EMenuEvent FEngine::PrintMenuAndSelectEvent()
@@ -113,7 +110,7 @@ EMenuEvent FEngine::PrintMenuAndSelectEvent()
 	std::cout << "[ 6) 로그인                 ]" << std::endl;
 	std::cout << "[ 7) 로그아웃               ]" << std::endl;
 	std::cout << "[ 8) 로그인 유저 정보 출력  ]" << std::endl;
-	std::cout << "[ 9) 케릭터 레벨업          ]" << std::endl;
+	std::cout << "[ 9) Level Up               ]" << std::endl;
 	std::cout << "[---------------------------]" << std::endl;
 	std::cout << "* Please input event number" << std::endl;
 	std::cout << "--> ";

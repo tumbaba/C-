@@ -5,6 +5,7 @@
 
 class FDataBase
 {
+	friend class FLoginSession;
 public:
 	static FDataBase* Get(const bool bDestry = false);
 
@@ -31,6 +32,8 @@ public:
 protected:
 	void SaveAccountFile(const FAccount& InAccount);
 	void DeleteAccountFile(const FAccount& InAccount);
+
+	void SavePlayer(FPlayer* InPlayer);
 
 private:
 	FDataBase();

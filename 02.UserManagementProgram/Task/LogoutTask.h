@@ -8,8 +8,6 @@ struct FLogoutTask
 	FLogoutTask(const FLogoutTask&) = delete;
 	FLogoutTask& operator=(const FLogoutTask&) = delete;
 
-	
-
-//private:
+private:
 	void Logout(const FAccount& InAccount, std::string* OptionalCharacterName);
 };

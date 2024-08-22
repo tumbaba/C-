@@ -19,10 +19,12 @@ public:
 
 	const std::unordered_map<FAccountName, FPlayer>& GetPlayers() const { return PlayerMap; }
 
-	void AllLogout();
 private:
 	EErrorCode Logout(const FAccount& InAccount);
+	void AllPlayerLogout();
 
+public:
+	~FLoginSession();
 private:
 	FLoginSession() {}
 	FLoginSession(const FLoginSession&) = delete;
