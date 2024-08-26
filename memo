@@ -210,11 +210,53 @@ noexcept 는 throw가 있으면 예외가 뜸? 멈춤?
 
 
 
+///////////////////////////////////////////////////////////////////////////////////////
+
+rapidjson::Document Doc(rapidjson::kObjectType);
+
+Doc은 JSON 문서를 나타내는 rapidjson::Document 객체입니다.
+kObjectType은 이 문서가 JSON 객체({}) 형식임을 나타냅니다. 즉, Doc은 빈 JSON 객체로 초기화됩니다.
+rapidjson::Value PlayerInfo(rapidjson::kObjectType);
+
+PlayerInfo는 또 다른 JSON 객체를 나타내는 rapidjson::Value 객체입니다.
+kObjectType을 사용하여 이 객체도 빈 JSON 객체로 초기화됩니다.
+InPlayer->Save(PlayerInfo, Doc.GetAllocator());
+
+InPlayer는 PlayerInfo라는 JSON 객체에 데이터를 저장하는 역할을 합니다.
+Save 함수는 InPlayer 객체의 데이터를 PlayerInfo에 저장하는 것으로 보이며, 이를 위해 Doc에서 메모리 할당자를 가져옵니다.
+메모리 할당자(Allocator)는 RapidJSON에서 JSON 요소를 추가할 때 필요한 메모리 관리 기능을 제공합니다.
+Doc.AddMember("PlayerInfo", PlayerInfo, Doc.GetAllocator());
+
+Doc JSON 객체에 "PlayerInfo"라는 이름의 멤버를 추가합니다.
+이 멤버의 값은 앞서 PlayerInfo에 저장된 JSON 객체입니다.
+다시 한 번, 메모리 할당자는 새로운 JSON 멤버를 추가하기 위해 필요합니다.
+rapidjson::StringBuffer Buffer;
+
+Buffer는 JSON 데이터를 문자열로 변환할 때 사용되는 버퍼입니다.
+StringBuffer는 RapidJSON의 메모리 버퍼 클래스이며, 데이터를 std::string과 비슷한 방식으로 저장할 수 있습니다.
+rapidjson::Writer<rapidjson::StringBuffer> Writer(Buffer);
+
+Writer는 JSON 문서를 직렬화하여 문자열로 변환하는 객체입니다.
+이 Writer는 Buffer를 사용하여 데이터를 저장합니다.
+Doc.Accept(Writer);
+
+Doc JSON 문서를 Writer에게 전달하여, Writer가 이를 StringBuffer에 기록하게 합니다.
+이 과정에서 Doc 객체는 JSON 형식의 문자열로 직렬화됩니다.
+std::string Json(Buffer.GetString(), Buffer.GetSize());
+
+Buffer에 저장된 JSON 문자열을 std::string 객체로 변환합니다.
+Buffer.GetString()은 JSON 문자열의 시작 주소를 반환하고, Buffer.GetSize()는 문자열의 길이를 반환합니다.
+이를 통해 완전한 JSON 데이터를 std::string으로 저장할 수 있습니다.
+std::ofstream File(PlayerFile);
+
+PlayerFile이라는 이름의 파일을 쓰기 모드로 엽니다. ofstream은 출력 파일 스트림을 의미하며, 파일에 데이터를 쓸 수 있습니다.
+File << Json;
+
+이전에 생성한 JSON 문자열을 파일에 기록합니다.
+이로써 PlayerFile에 PlayerInfo를 포함한 JSON 데이터가 저장됩니다.
 
 
-
-
-
+///////////////////////////////////////////////////////////////////////////////////////
 
 
 
