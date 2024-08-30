@@ -32,13 +32,30 @@ EndPlay
 
 랜버트 코사인법칙
 
-Power(x,2) 2제
+Power(x,2) 2제곱
+
+//////////////////////////////////////////////////////////////////////////
+
+world rotation, local rotation
 
 
+스테틱 메시 -> 레지스터 컴포넌트  : 월드에 등록
 
+생성자에서는 셋업 어테치먼트 ?
 
+어테치 투 컴포넌트
 
+keepWoeldTransform;
+keepRelativetranstform;
 
+D
+  
+ataAsset
 
+언리얼 델리케이트
+DECLARE_MULTICAST_DELEGATE
 
+outer?
+
+20240830  15 12 cloud 생성 오류 확인
 
