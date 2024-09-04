@@ -106,12 +106,12 @@ ACelestialBody* APlanet::AddMoon(ACelestialBody* InTemplate)
 	ActorSpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	ActorSpawnParameters.TransformScaleMethod = ESpawnActorScaleMethod::OverrideRootScale;
 
-	const FTransform NewTransform = InTemplate ? InTemplate->GetTransform() : GetTransform();
+	const FTransform NewTransform = InTemplate ? InTemplate->GetTransform() : RotatingAxis->GetComponentTransform();
 	ACelestialBody* CelestialBody = World->SpawnActor<ACelestialBody>(ACelestialBody::StaticClass(), NewTransform, ActorSpawnParameters);
 
 	if (!InTemplate)
 	{
-		CelestialBody->AttachToActor(this, FAttachmentTransformRules::KeepWorldTransform);
+		CelestialBody->AttachToComponent(RotatingAxis, FAttachmentTransformRules::KeepWorldTransform);
 	}
 
 	return CelestialBody;

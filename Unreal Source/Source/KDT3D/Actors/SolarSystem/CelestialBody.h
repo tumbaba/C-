@@ -18,6 +18,10 @@ public:
 
 	double GetOrbitalSpeed() const { return CelestialBodyData ? CelestialBodyData->OribitalSpeed : 0.0; }
 
+	FVector GetBodyWorldLocation() const { return Body->GetComponentLocation(); }
+
+	void SetCelestialBodyData(UCelestialBodyDataAsset* InData);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -26,6 +30,8 @@ protected:
 
 	void OnCelestialBodyDataChanged();
 	virtual void UpdateDataAsset();
+
+	void CalculateStarLightDirection();
 
 protected:
 #if WITH_EDITOR
@@ -54,8 +60,16 @@ protected:
 	UStaticMeshComponent* Body;
 
 protected: // Optinal
+	UPROPERTY()
+	UMaterialInstanceDynamic* BodyMID = nullptr;
+
+protected: // Optinal
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* Cloud;
+
+protected:
+	UPROPERTY(Transient)
+	class AStar* ChachedStar = nullptr;
 
 protected:
 	UPROPERTY(Category = "CelestialBody", EditAnywhere)

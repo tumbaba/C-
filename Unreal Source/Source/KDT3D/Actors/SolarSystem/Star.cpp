@@ -6,6 +6,10 @@
 
 AStar::AStar()
 {
+	PointLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("PointLight"));
+	PointLight->SetupAttachment(Body);
+	PointLight->Intensity = 10.f;
+	PointLight->bUseInverseSquaredFalloff = false;
 	StarEmissivePowerTimelineComponent = CreateDefaultSubobject<UTimelineComponent>(TEXT("StarEmissivePowerTimelineComponent"));
 
 	StarEmissivePowerTimelineComponent->SetLooping(true);
@@ -17,6 +21,10 @@ void AStar::UpdateDataAsset()
 
 	StarBodyData = Cast<UStarDataAsset>(CelestialBodyData);
 	if (!StarBodyData) { return; }
+
+	PointLight->Intensity = StarBodyData->LightIntensity;
+	PointLight->AttenuationRadius = StarBodyData->LightAttenuationRadius;
+	PointLight->LightFalloffExponent = StarBodyData->LightFalloffExponent;
 
 	if (StarBodyData->StarEmissivePowerCurve)
 	{
@@ -35,15 +43,16 @@ void AStar::UpdateDataAsset()
 	}
 
 	StarEmissivePowerTimelineComponent->SetPlayRate(StarBodyData->PlayRate);
-
-	MID = Body->CreateDynamicMaterialInstance(0);
+#if WITH_EDITOR
+	OnStarDataAssetChanged.Broadcast();
+#endif
 }
 
 void AStar::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (StarBodyData->StarEmissivePowerCurve)
+	if (StarBodyData && StarBodyData->StarEmissivePowerCurve)
 	{
 		StarEmissivePowerTimelineComponent->Play();
 	}
@@ -51,5 +60,5 @@ void AStar::BeginPlay()
 
 void AStar::OnStarPower(float Value)
 {
-	MID->SetScalarParameterValue(MID_EmissivePower, Value);
+	BodyMID->SetScalarParameterValue(MID_EmissivePower, Value);
 }

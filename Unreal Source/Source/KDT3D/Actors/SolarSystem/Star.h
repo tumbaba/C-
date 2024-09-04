@@ -5,11 +5,11 @@
 #include "CoreMinimal.h"
 #include "Actors/SolarSystem/CelestialBody.h"
 #include "Components/TimelineComponent.h"
+#include "Components/PointLightComponent.h"
 #include "Star.generated.h"
 
-/**
- * 
- */
+DECLARE_MULTICAST_DELEGATE(FOnStarDataAssetChanged)
+
 UCLASS()
 class KDT3D_API AStar : public ACelestialBody
 {
@@ -17,6 +17,9 @@ class KDT3D_API AStar : public ACelestialBody
 
 public:
 	AStar();
+#if WITH_EDITOR
+	FOnStarDataAssetChanged OnStarDataAssetChanged;
+#endif
 
 protected:
 	virtual void UpdateDataAsset() override;
@@ -27,14 +30,14 @@ protected:
 
 protected:
 	UPROPERTY()
-	class UStarDataAsset* StarBodyData;
+	UPointLightComponent* PointLight;
 
 	UPROPERTY()
 	UTimelineComponent* StarEmissivePowerTimelineComponent;
 
 protected:
 	UPROPERTY()
-	UMaterialInstanceDynamic* MID = nullptr;
+	class UStarDataAsset* StarBodyData;
 
 protected:
 	const static inline FName TrackName = TEXT("Value");

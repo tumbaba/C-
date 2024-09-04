@@ -2,6 +2,8 @@
 
 
 #include "Actors/SolarSystem/CelestialBody.h"
+#include "Actors/SolarSystem/Star.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ACelestialBody::ACelestialBody()
@@ -19,6 +21,12 @@ ACelestialBody::ACelestialBody()
 	Body->SetupAttachment(RotatingAxis);
 }
 
+void ACelestialBody::SetCelestialBodyData(UCelestialBodyDataAsset* InData)
+{
+	CelestialBodyData = InData;
+	OnConstruction(GetActorTransform());
+}
+
 // Called when the game starts or when spawned
 void ACelestialBody::BeginPlay()
 {
@@ -32,7 +40,9 @@ void ACelestialBody::OnConstruction(const FTransform& Transform)
 
 	if (CelestialBodyData)
 	{
+#if WITH_EDITOR
 		CelestialBodyDataUpdateHandle = CelestialBodyData->OnCelestialBodyDataAssetChanged.AddUObject(this, &ThisClass::OnCelestialBodyDataChanged);
+#endif
 		UpdateDataAsset();
 	}
 }
@@ -55,11 +65,16 @@ void ACelestialBody::UpdateDataAsset()
 	Body->SetRelativeScale3D(CelestialBodyData->BodyScale3D);
 	Body->SetMaterial(0, CelestialBodyData->BodyMaterial);
 
+	if (CelestialBodyData->BodyMaterial && CelestialBodyData->bDynamicMaterialInstance)
+	{
+		BodyMID = Body->CreateDynamicMaterialInstance(0);
+	}
+
 	if (CelestialBodyData->bCloud && Cloud == nullptr)
 	{
 		Cloud = NewObject<UStaticMeshComponent>(this, TEXT("Cloud"));
 		Cloud->RegisterComponent();
-		Cloud->AttachToComponent(RotatingAxis, FAttachmentTransformRules::KeepRelativeTransform);
+		Cloud->AttachToComponent(Body, FAttachmentTransformRules::KeepRelativeTransform);
 	}
 	else if (CelestialBodyData->bCloud == false && Cloud)
 	{
@@ -88,6 +103,50 @@ void ACelestialBody::UpdateDataAsset()
 		}
 		Cloud->SetOverlayMaterial(MaterialInstance);
 	}
+
+	if (CelestialBodyData->bCalculateStarLightDirection)
+	{
+		CalculateStarLightDirection();
+	}
+}
+
+void ACelestialBody::CalculateStarLightDirection()
+{
+	if (!ChachedStar)
+	{
+		ChachedStar = Cast<AStar>(UGameplayStatics::GetActorOfClass(this, AStar::StaticClass()));
+		if (!ChachedStar)
+		{
+			// 공간상에 Star가 없습니다.
+			ensure(false);
+			return;
+		}
+#if WITH_EDITOR
+		ChachedStar->OnStarDataAssetChanged.AddUObject(this, &ThisClass::CalculateStarLightDirection);
+#endif
+	}
+
+	const FVector MyLocation = GetBodyWorldLocation();
+	const FVector StarLocation = ChachedStar->GetBodyWorldLocation();
+
+	// 나에서 Star로 향하는 Vector를 구한다
+	// 벡터의 뺄셈은 뒤Vector(MyLocation)에서 앞Vector(StarLocation)로 향하는 Vector를 만든다
+	const FVector Vector = StarLocation - MyLocation;
+
+	// Vector를 Normalize해서(단위 Vector로 만들기) 크기 성분을 지우고 방향 정보만 남긴다
+	FVector DirectionVector = Vector;
+	DirectionVector.Normalize();
+	const FName MID_LightDirection = TEXT("LightDirection");
+	BodyMID->SetVectorParameterValue(MID_LightDirection, DirectionVector);
+
+	if (CelestialBodyData->OverlayMaterial && Cloud->OverlayMaterial)
+	{
+		UMaterialInstanceDynamic* MID = Cast<UMaterialInstanceDynamic>(Cloud->OverlayMaterial);
+		if (MID)
+		{
+			MID->SetVectorParameterValue(MID_LightDirection, DirectionVector);
+		}
+	}
 }
 
 #if WITH_EDITOR
@@ -114,14 +173,19 @@ void ACelestialBody::Tick(float DeltaTime)
 	{
 		const double Speed = CelestialBodyData->RotatingSpeed * DeltaTime;
 		FRotator Rotator(0.0, Speed, 0.0);
-		Body->AddRelativeRotation(Rotator);
+		Body->AddLocalRotation(Rotator);
 	}
 
 	if (Cloud)
 	{
 		const double Speed = CelestialBodyData->CloudRotatingSpeed * DeltaTime;
 		FRotator Rotator(0.0, Speed, 0.0);
-		Cloud->AddRelativeRotation(Rotator);
+		Cloud->AddLocalRotation(Rotator);
+	}
+
+	if (CelestialBodyData->bCalculateStarLightDirection)
+	{
+		CalculateStarLightDirection();
 	}
 }
 

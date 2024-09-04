@@ -32,6 +32,16 @@ public: // Body
 	UPROPERTY(EditAnywhere, Category = "CelestialBody")
 	double RotatingSpeed = 60.0;
 
+	UPROPERTY(EditAnywhere, Category = "CelestialBody")
+	bool bDynamicMaterialInstance = false;
+
+	// * Star의 위치를 얻어와서 천체에서 Star로 향하는 방향 Vector를 계산한다
+	// * Material Vector Parm LightDirection에 값을 채운다
+	// * Star는 처음 발견한 하나만 고려한다
+	// * see ACelestialBody::CalculateStarLightDirection
+	UPROPERTY(EditAnywhere, Category = "CelestialBody")
+	bool bCalculateStarLightDirection = false;
+
 public: // Cloud
 
 	UPROPERTY(EditAnywhere, Category = "CelestialBody|Cloud")
