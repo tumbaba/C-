@@ -24,6 +24,7 @@ void UAsyncLoadingScreenSubsystem::OpenLevelWithLoadingScreen(TSubclassOf<UUserW
 	{
 		FLoadingScreenAttributes LoadingScreenAttributes;
 		LoadingScreenAttributes.WidgetLoadingScreen = Widget->TakeWidget();
+		//LoadingScreenAttributes.WidgetLoadingScreen = FLoadingScreenAttributes::NewTestLoadingScreenWidget();
 		LoadingScreenAttributes.MinimumLoadingScreenDisplayTime = 3.f;
 		LoadingScreenAttributes.bAutoCompleteWhenLoadingCompletes = true;
 		LoadingScreenAttributes.bAllowEngineTick = true;

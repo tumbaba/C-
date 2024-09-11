@@ -112,6 +112,10 @@ void ACelestialBody::UpdateDataAsset()
 
 void ACelestialBody::CalculateStarLightDirection()
 {
+	if (!Cloud)
+	{
+		return;
+	}
 	if (!ChachedStar)
 	{
 		ChachedStar = Cast<AStar>(UGameplayStatics::GetActorOfClass(this, AStar::StaticClass()));
