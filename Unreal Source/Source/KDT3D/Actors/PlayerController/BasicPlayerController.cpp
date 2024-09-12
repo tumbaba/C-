@@ -8,6 +8,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/Character.h"
 #include "Components/NoFallCharacterMovementComponent.h"
+#include "Components/SoftWheelSpringArmComponent.h"
 
 ABasicPlayerController::ABasicPlayerController()
 {
@@ -74,6 +75,16 @@ void ABasicPlayerController::SetupInputComponent()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("IA_Jump is disabled"));
 	}
+
+	if (const UInputAction* InputAction = BasicPlayerControllerDataAsset->GetInputActionFromName(TEXT("IA_ZoomWheel")))
+	{
+		EnhancedInputComponent->BindAction(InputAction,
+			ETriggerEvent::Triggered, this, &ThisClass::OnZoomWheel);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("IA_ZoomWheel is disabled"));
+	}
 }
 
 void ABasicPlayerController::OnMove(const FInputActionValue& InputActionValue)
@@ -114,9 +125,16 @@ void ABasicPlayerController::OnJump(const FInputActionValue& InputActionValue)
 {
 	ACharacter* ControlledCharacter = Cast<ACharacter>(GetPawn());
 	ControlledCharacter->Jump();
+}
 
-	if (ControlledCharacter->bIsCrouched)
-	{
+void ABasicPlayerController::OnZoomWheel(const FInputActionValue& InputActionValue)
+{
+	ACharacter* ControlledCharacter = Cast<ACharacter>(GetPawn());
+	USoftWheelSpringArmComponent* SpringArm = ControlledCharacter->GetComponentByClass<USoftWheelSpringArmComponent>();
+	if (!SpringArm) { ensure(false); return; }
 
-	}
+	const float ActionValue = InputActionValue.Get<float>();
+	//UE_LOG(LogTemp, Warning, TEXT("Wheel: %f"), ActionValue);
+	if (FMath::IsNearlyZero(ActionValue)) { return; }
+	SpringArm->OnZoomWheel(ActionValue * 20.f);
 }

@@ -8,6 +8,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SoftWheelSpringArmComponent.h"
 #include "Animation/BaisicCharacterAnimInstance.h"
 #include "LobbyCharacter.generated.h"
 
@@ -78,7 +79,7 @@ public:
 protected:
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	TObjectPtr<USpringArmComponent> SpringArm;
+	TObjectPtr<USoftWheelSpringArmComponent> SpringArm;
 
 	/** Please add a variable description */
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)

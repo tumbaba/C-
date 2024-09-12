@@ -57,6 +57,7 @@ protected:
 	void OnCrouch(const FInputActionValue& InputActionValue);
 	void OnUnCrouch(const FInputActionValue& InputActionValue);
 	void OnJump(const FInputActionValue& InputActionValue);
+	void OnZoomWheel(const FInputActionValue& InputActionValue);
 
 protected:
 	UPROPERTY()

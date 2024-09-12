@@ -27,7 +27,7 @@ ALobbyCharacter::ALobbyCharacter(const FObjectInitializer& ObjectInitializer)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	SpringArm = CreateDefaultSubobject<USoftWheelSpringArmComponent>(TEXT("SpringArm"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 
 	{
@@ -35,6 +35,7 @@ ALobbyCharacter::ALobbyCharacter(const FObjectInitializer& ObjectInitializer)
 		SpringArm->ProbeSize = 5.0;
 		SpringArm->bUsePawnControlRotation = true;
 		SpringArm->bInheritRoll = false;
+		SpringArm->SetMinMaxTargetArmLength(200.f, SpringArm->GetMaxTargetArmLength());
 	}
 	Camera->SetupAttachment(SpringArm);
 
@@ -115,11 +116,6 @@ void ALobbyCharacter::OnEndCrouch(float HalfHeightAdjust, float ScaledHalfHeight
 void ALobbyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (GetMovementComponent()->IsFalling())
-	{
-		
-	}
 }
 
 // Called to bind functionality to input

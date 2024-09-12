@@ -32,7 +32,7 @@ protected:
 	bool IsCliff(const FVector& Direction);
 
 protected:
-	FVector StartFallingForwardDirction;
+	FVector StartFallingFowardDirction;
 	FVector StartFallingRightDirction;
 	TEnumAsByte<enum EMovementMode> LastMovementMode;
 };

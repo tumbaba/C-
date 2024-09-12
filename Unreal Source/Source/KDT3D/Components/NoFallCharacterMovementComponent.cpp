@@ -21,20 +21,20 @@ void UNoFallCharacterMovementComponent::BeginPlay()
 
 void UNoFallCharacterMovementComponent::StartNewPhysics(float deltaTime, int32 Iterations)
 {
-	Super::StartNewPhysics(deltaTime, Iterations);
-
 	if (MovementMode == MOVE_Falling && LastMovementMode != MovementMode)
 	{
-		StartFallingForwardDirction = GetOwner()->GetActorForwardVector();
+		StartFallingFowardDirction = GetOwner()->GetActorForwardVector();
 		StartFallingRightDirction = GetOwner()->GetActorRightVector();
 	}
 
 	LastMovementMode = MovementMode;
+
+	Super::StartNewPhysics(deltaTime, Iterations);
 }
 
 void UNoFallCharacterMovementComponent::PhysFalling(float deltaTime, int32 Iterations)
 {
-	if (IsCliff(StartFallingForwardDirction) || IsCliff(StartFallingRightDirction) || IsCliff(-StartFallingRightDirction))
+	if (IsCliff(StartFallingFowardDirction) || IsCliff(StartFallingRightDirction) || IsCliff(-StartFallingRightDirction))
 	{
 		Velocity.X = 0;
 		Velocity.Y = 0;
@@ -235,16 +235,16 @@ void UNoFallCharacterMovementComponent::PhysWalking(float deltaTime, int32 Itera
 	{
 		// Walking 상태 일 때 Nav 바닥을 찾으면 NavWalking으로 전환 한다
 		// 이미 Crouching 중이라면 전환을 미룬다
-		if (FNavLocation NavFloorLocation; !IsCrouching() && FindNavFloorCustomSearchRadius(GetActorLocation(), NavFloorLocation, 0.f))
+		if (FNavLocation NavFloorLocation; !IsCrouching() && FindNavFloorCustomSearchRadius(GetActorFeetLocation(), NavFloorLocation, 0.f))
 		{
 			SetMovementMode(MOVE_NavWalking);
 		}
 		else
 		{
 			// 일반 걷기 중일 때 절벽이 있으면 이동을 취소한다
-			const FVector ForwardDirection = GetOwner()->GetActorForwardVector();
+			const FVector FowardDirection = GetOwner()->GetActorForwardVector();
 			const FVector RightDirection = GetOwner()->GetActorRightVector();
-			if (IsCliff(ForwardDirection) || IsCliff(RightDirection) || IsCliff(-RightDirection))
+			if (IsCliff(FowardDirection) || IsCliff(RightDirection) || IsCliff(-RightDirection))
 			{
 				ScopedStepUpMovement.RevertMove();
 				return;
