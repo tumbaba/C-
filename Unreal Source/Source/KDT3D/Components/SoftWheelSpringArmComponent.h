@@ -15,9 +15,16 @@ class KDT3D_API USoftWheelSpringArmComponent : public USpringArmComponent
 	GENERATED_BODY()
 
 public:
+	UFUNCTION(BlueprintCallable)
+	void SetDesiredZoom(const float InValue);
+	
+	UFUNCTION(BlueprintCallable)
 	void OnZoomWheel(const float ActionValue);
+
+	UFUNCTION(BlueprintCallable)
 	void SetMinMaxTargetArmLength(const float MinLength, const float MaxLength);
 
+public:
 	float GetMinTargetArmLength() const { return MinTargetArmLength; }
 	float GetMaxTargetArmLength() const { return MaxTargetArmLength; }
 

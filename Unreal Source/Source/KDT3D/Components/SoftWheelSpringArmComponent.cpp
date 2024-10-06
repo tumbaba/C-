@@ -3,6 +3,11 @@
 
 #include "Components/SoftWheelSpringArmComponent.h"
 
+void USoftWheelSpringArmComponent::SetDesiredZoom(const float InValue)
+{
+	DesiredTargetArmLength = FMath::Clamp(InValue, MinTargetArmLength, MaxTargetArmLength);
+}
+
 void USoftWheelSpringArmComponent::OnZoomWheel(const float ActionValue)
 {
 	DesiredTargetArmLength = FMath::Clamp(DesiredTargetArmLength + ActionValue, MinTargetArmLength, MaxTargetArmLength);

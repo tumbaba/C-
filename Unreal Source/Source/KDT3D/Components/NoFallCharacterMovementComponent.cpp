@@ -267,7 +267,7 @@ bool UNoFallCharacterMovementComponent::IsCliff(const FVector& Direction)
 	bool bHit = GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params);
 
 	// DrawDebugLine
-	{
+	/*{
 		FColor LineColor = FColor::Red;
 		FColor NavLineColor = FColor::Cyan;
 		if (!bHit)
@@ -275,7 +275,7 @@ bool UNoFallCharacterMovementComponent::IsCliff(const FVector& Direction)
 			LineColor = FColor::Green;
 		}
 		DrawDebugLine(GetWorld(), Start, End, LineColor, false, 3.f, 0U, 2.f);
-	}
+	}*/
 
 	return !bHit;
 }

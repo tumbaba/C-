@@ -3,8 +3,6 @@
 
 #include "BasicPlayerController.h"
 #include "Actors/PlayerCameraManager/BasicPlayerCameraManager.h"
-#include "EnhancedInputSubsystems.h"
-#include "EnhancedInputComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/Character.h"
 #include "Components/NoFallCharacterMovementComponent.h"
@@ -13,11 +11,11 @@
 ABasicPlayerController::ABasicPlayerController()
 {
 	{
-		static ConstructorHelpers::FObjectFinder<UBasicPlayerControllerDataAsset> Asset
-		{ TEXT("/Script/KDT3D.BasicPlayerControllerDataAsset'/Game/Blueprint/LobbyMap/GameplayFramework/DA_BasicPlayerController.DA_BasicPlayerController'") };
+		static ConstructorHelpers::FObjectFinder<UInputMappingContext> Asset
+		{ TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Blueprint/Character/Input/IMC_Character.IMC_Character'") };
 		check(Asset.Object);
 
-		BasicPlayerControllerDataAsset = Asset.Object;
+		IMC_Default = Asset.Object;
 	}
 
 	PlayerCameraManagerClass = ABasicPlayerCameraManager::StaticClass();
@@ -28,7 +26,7 @@ void ABasicPlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
-	Subsystem->AddMappingContext(BasicPlayerControllerDataAsset->IMC, 0);
+	Subsystem->AddMappingContext(IMC_Default, 0);
 }
 
 void ABasicPlayerController::SetupInputComponent()
@@ -38,7 +36,7 @@ void ABasicPlayerController::SetupInputComponent()
 	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent);
 	ensure(EnhancedInputComponent);
 
-	if (const UInputAction* InputAction = BasicPlayerControllerDataAsset->GetInputActionFromName(TEXT("IA_Move")))
+	if (const UInputAction* InputAction = FUtils::GetInputActionFromName(IMC_Default, TEXT("IA_Move")))
 	{
 		EnhancedInputComponent->BindAction(InputAction, ETriggerEvent::Triggered, this, &ThisClass::OnMove);
 	}
@@ -47,7 +45,7 @@ void ABasicPlayerController::SetupInputComponent()
 		UE_LOG(LogTemp, Warning, TEXT("IA_Move is disabled"));
 	}
 
-	if (const UInputAction* InputAction = BasicPlayerControllerDataAsset->GetInputActionFromName(TEXT("IA_LookMouse")))
+	if (const UInputAction* InputAction = FUtils::GetInputActionFromName(IMC_Default, TEXT("IA_LookMouse")))
 	{
 		EnhancedInputComponent->BindAction(InputAction, ETriggerEvent::Triggered, this, &ThisClass::OnLook);
 	}
@@ -56,7 +54,7 @@ void ABasicPlayerController::SetupInputComponent()
 		UE_LOG(LogTemp, Warning, TEXT("IA_LookMouse is disabled"));
 	}
 
-	if (const UInputAction* InputAction = BasicPlayerControllerDataAsset->GetInputActionFromName(TEXT("IA_Crouch")))
+	if (const UInputAction* InputAction = FUtils::GetInputActionFromName(IMC_Default, TEXT("IA_Crouch")))
 	{
 		EnhancedInputComponent->BindAction(InputAction, ETriggerEvent::Triggered, this, &ThisClass::OnCrouch);
 		EnhancedInputComponent->BindAction(InputAction, ETriggerEvent::Completed, this, &ThisClass::OnUnCrouch);
@@ -66,7 +64,7 @@ void ABasicPlayerController::SetupInputComponent()
 		UE_LOG(LogTemp, Warning, TEXT("IA_Crouch is disabled"));
 	}
 
-	if (const UInputAction* InputAction = BasicPlayerControllerDataAsset->GetInputActionFromName(TEXT("IA_Jump")))
+	if (const UInputAction* InputAction = FUtils::GetInputActionFromName(IMC_Default, TEXT("IA_Jump")))
 	{
 		EnhancedInputComponent->BindAction(InputAction,
 			ETriggerEvent::Started, this, &ThisClass::OnJump);
@@ -76,14 +74,17 @@ void ABasicPlayerController::SetupInputComponent()
 		UE_LOG(LogTemp, Warning, TEXT("IA_Jump is disabled"));
 	}
 
-	if (const UInputAction* InputAction = BasicPlayerControllerDataAsset->GetInputActionFromName(TEXT("IA_ZoomWheel")))
+	if (bZoomWheel)
 	{
-		EnhancedInputComponent->BindAction(InputAction,
-			ETriggerEvent::Triggered, this, &ThisClass::OnZoomWheel);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("IA_ZoomWheel is disabled"));
+		if (const UInputAction* InputAction = FUtils::GetInputActionFromName(IMC_Default, TEXT("IA_ZoomWheel")))
+		{
+			EnhancedInputComponent->BindAction(InputAction,
+				ETriggerEvent::Triggered, this, &ThisClass::OnZoomWheel);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("IA_ZoomWheel is disabled"));
+		}
 	}
 }
 

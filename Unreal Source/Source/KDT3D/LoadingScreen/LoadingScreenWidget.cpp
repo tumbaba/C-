@@ -34,7 +34,7 @@ void ULoadingScreenWidget::NativeDestruct()
 
 void ULoadingScreenWidget::CheckResources(UImage* InImage)
 {
-	if (UTexture2D* BrushTexture = Cast<UTexture2D>(InImage->Brush.GetResourceObject()))
+	if (UTexture2D* BrushTexture = Cast<UTexture2D>(InImage->GetBrush().GetResourceObject()))
 	{
 #if WITH_EDITOR
 		if (BrushTexture->LODGroup != TextureGroup::TEXTUREGROUP_UI)
